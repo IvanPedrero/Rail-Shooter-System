@@ -1,0 +1,5 @@
+sceneSetups:
+- path: Assets/Rail Shooter System/Demo/GameScene.unity
+  isLoaded: 1
+  isActive: 1
+  isSubScene: 0
