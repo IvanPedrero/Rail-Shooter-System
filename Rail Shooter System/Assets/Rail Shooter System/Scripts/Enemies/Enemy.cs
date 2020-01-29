@@ -8,27 +8,35 @@ public class Enemy : MonoBehaviour
     #region Public Attributes
 
     [Header("Heath of the enemy")]
+    //! Initial enemy health value.
     public float health = 100;
 
     [Header("Distance between enemy and player to stop in meters : ")]
+    //! Stoping distance in meters for the nav mesh agent of the enemy to stop.
     public float stoppingDistance = 1f;
 
     [Header("Time in seconds to attack player : ")]
+    //! Time in seconds to attack the player after stopping.
     public float timeToAttack = 3f;
 
     [Header("How much damage the enemy will deal : ")]
+    //! Damage to apply to the player's health for each hit.
     public float damageDealed = 15f;
 
     [Header("How much score the enemy will give : ")]
+    //! How many points the enemy will give after killed.
     public int scoreGiven = 100;
 
     [Header("Stagger the enemy when damaged?")]
+    //! Boolean that decides if the enemy can be staggered after landed a hit.
     public bool staggerEnemy = true;
 
     [Header("Time that the enemy will reamin staggered : ")]
     [Range(2, 4)]
+    //! Time in seconds to be staggered before start moving again.
     public float staggerTime = 2.5f;
 
+    //! Posible states for the enemy.
     public enum enemyState
     {
         idle,
@@ -38,6 +46,7 @@ public class Enemy : MonoBehaviour
         dead
     };
     [HideInInspector]
+    //! Variable that defines the state.
     public enemyState state = enemyState.idle;
 
     #endregion
@@ -76,7 +85,10 @@ public class Enemy : MonoBehaviour
         // Manage each state of the enemy.
         ManageStates();
     }
-
+    
+    /**
+     * This method will decide the enemy state depending on the nav mesh attributes and the current state on each frame.
+     */
     private void ManageStates()
     {
         // Do not play walk animation if idle or staggered.
@@ -107,7 +119,9 @@ public class Enemy : MonoBehaviour
         }
     }
 
-    // Accessed by node of the parent when reached.
+    /**
+    * This method is accessed by the parent node when player already reached it. It signals to each enemy to start attacking.
+    */
     public void StartChasingPlayer()
     {
         // Set the destination of the enemy to the player.
@@ -120,6 +134,9 @@ public class Enemy : MonoBehaviour
         state = enemyState.walking;
     }
 
+    /**
+    * Sets the animation to attack and counts 'n' time to start attacking.
+    */
     private void Attack()
     {
         // Do not count time if the enemy is still attacking.
@@ -140,6 +157,10 @@ public class Enemy : MonoBehaviour
         }
     }
 
+    /**
+    * Functions that deals the damage to the player.
+    * @see ReceiveDamage() on HealthController.cs
+    */
     public void DealDamage()
     {
         // Send damage to the player.
@@ -148,12 +169,18 @@ public class Enemy : MonoBehaviour
 
     #region Damage and Dead Methods
 
+    /**
+    * Remove the enemy from the parent list when killed.
+    */
     private void RemoveFromList()
     {
         // Remove this enemy from the list of the parent.
         this.transform.parent.SendMessage("RemoveChildFromList", this);
     }
 
+    /**
+    * Receive damage (with modified applied) and substract it from the health. Check if the health has reached zero to set the state to 'dead'.
+    */
     public void ReceiveGeneralDamage(float damage)
     {
         // Remove health.
@@ -183,21 +210,31 @@ public class Enemy : MonoBehaviour
             StartCoroutine(Stagger());
     }
 
+    /**
+    * This method stagger the enemy for 'n' seconds before start walking again.!
+    * @see staggerTime
+    */
     private IEnumerator Stagger()
     {
-        state = enemyState.staggered;
+        if(state != enemyState.dead){
 
-        anim.SetTrigger("damage");
+            state = enemyState.staggered;
 
-        navMeshAgent.isStopped = true;
+            anim.SetTrigger("damage");
 
-        yield return new WaitForSeconds(staggerTime);
+            navMeshAgent.isStopped = true;
 
-        if(state != enemyState.dead)
-        {
-            state = enemyState.walking;
+            yield return new WaitForSeconds(staggerTime);
 
-            navMeshAgent.isStopped = false;
+            if(state != enemyState.dead)
+            {
+                state = enemyState.walking;
+
+                navMeshAgent.isStopped = false;
+            }
+        }
+        else{
+            yield return null;
         }
     }
 

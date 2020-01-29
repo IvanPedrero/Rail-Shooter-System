@@ -32,6 +32,10 @@ public class Node : MonoBehaviour
 
     #region Unity Methods
 
+    void Start(){
+        FixYPosition();
+    }
+
     /**
      * This method will draw on the editor's gizmos the spheres and the colors according the node's parameters.
      */
@@ -47,6 +51,18 @@ public class Node : MonoBehaviour
 
         // Draw an sphere on the node position.
         Gizmos.DrawSphere(this.transform.position, 1f);
+    }
+
+    #endregion
+
+    #region Node Method
+
+    /**
+    * This method will find the player object and will copy to itself it's 'y' position.
+    */
+    void FixYPosition(){
+        float newPos = GameObject.FindGameObjectWithTag("Player").transform.position.y;
+        this.transform.position = new Vector3(this.transform.position.x, newPos, this.transform.position.z);
     }
 
     #endregion

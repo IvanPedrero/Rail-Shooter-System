@@ -202,7 +202,7 @@ public class RailMovementController : MonoBehaviour
      * This method reloads the current scene when all the nodes in the list have been visited.
      * You should change this for your own custom behaviour.
      */
-    private void EndGame()
+    public void EndGame()
     {
         // TODO: Change this for your end-game code!
         Debug.LogWarning("Change the code HERE for you own custom end-game code!");
@@ -302,6 +302,9 @@ public class RailMovementController : MonoBehaviour
      */
     void OnDrawGizmos()
     {
+        if(nodes.Count == 0){
+            return;
+        }
         foreach (Transform node in nodes)
         {
             int index = nodes.FindIndex(d => d == node);

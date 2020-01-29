@@ -35,7 +35,13 @@ public class HealthController : MonoBehaviour
     public void ReceiveDamage(float damage)
     {
         current_health -= damage;
-        UpdateHealthText();
+        
+        if(current_health <= 0){
+            FindObjectOfType<RailMovementController>().EndGame();
+        }
+        else{
+            UpdateHealthText();
+        }
     }
 
     #endregion
